@@ -1,25 +1,29 @@
 {% extends "layout.njk" %}
 
 {% block content %}
-<section class="hero">
-  <h1>{{ page.title }}</h1>
-  <p class="hero-description">{{ page.description }}</p>
-</section>
+<article>
+  <header class="hero">
+    <h1>{{ page.title }}</h1>
+    <p class="hero-description">{{ page.description }}</p>
+  </header>
 
-{% for name, html in page.content %}
-<section class="content-block content-block--{{ name }}">
-  {{ html | safe }}
-</section>
-{% endfor %}
+  {% for name, html in page.content %}
+  {% if html | trim %}
+  <section class="content-block content-block--{{ name }}">
+    {{ html | safe }}
+  </section>
+  {% endif %}
+  {% endfor %}
+</article>
 
 {% if page.internalLinks.length > 0 %}
-<section class="related-pages">
-  <h2>Related Pages</h2>
+<aside class="related-pages">
+  <h2>You Might Also Like</h2>
   <ul>
     {% for link in page.internalLinks %}
     <li><a href="{{ link.targetUrl }}">{{ link.anchorText }}</a></li>
     {% endfor %}
   </ul>
-</section>
+</aside>
 {% endif %}
 {% endblock %}

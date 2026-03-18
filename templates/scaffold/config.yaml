@@ -30,12 +30,104 @@ templates:
       blocks:
         - name: hero
           type: static
-        - name: content
-          type: static
-          template: "<p>Discover the best {{dimensions.product}} solutions designed specifically for {{dimensions.use_case}}.</p>"
+          template: |
+            <p class="hero-lead">Updated for 2026 — independently researched, no sponsorships.</p>
+
+        - name: introduction
+          type: ai
+          ai:
+            prompt: >
+              Write a 150-word introduction for a landing page titled
+              "Best {{dimensions.product}} for {{dimensions.use_case}} in 2026".
+              The reader is evaluating {{dimensions.product}} options for their
+              {{dimensions.use_case}} context. Address their likely pain points,
+              what matters most when choosing, and what this guide covers.
+              Write in second person ("you"). Be direct and specific, not generic.
+              Output raw HTML with <p> tags only.
+            model: gpt-4o-mini
+            temperature: 0.7
+            maxTokens: 400
+          rules:
+            minWords: 100
+            maxWords: 250
+            requiredKeywords:
+              - "{{dimensions.product}}"
+              - "{{dimensions.use_case}}"
+
+        - name: key_features
+          type: ai
+          ai:
+            prompt: >
+              Write a "Key Features to Look For" section for someone choosing
+              {{dimensions.product}} for {{dimensions.use_case}}.
+              List 5-6 features that matter most for this specific audience.
+              For each feature, write 2-3 sentences explaining why it matters
+              in the {{dimensions.use_case}} context specifically.
+              Format as HTML: an <h2> heading, then each feature as an <h3>
+              with a <p> explanation. Do not use bullet lists.
+            model: gpt-4o-mini
+            temperature: 0.7
+            maxTokens: 800
+          rules:
+            minWords: 200
+            maxWords: 500
+
+        - name: comparison
+          type: ai
+          ai:
+            prompt: >
+              Create a comparison overview of the top 3-4 {{dimensions.product}}
+              options best suited for {{dimensions.use_case}} in 2026.
+              For each option, include: name, one-line summary of why it fits
+              this audience, key strength, key limitation, and approximate
+              starting price. Format as an HTML table with columns:
+              Product, Best For, Key Strength, Limitation, Starting Price.
+              Wrap in <h2>Top Picks</h2> followed by the <table>.
+              Use realistic, current products and pricing.
+            model: gpt-4o-mini
+            temperature: 0.5
+            maxTokens: 600
+
+        - name: buying_guide
+          type: ai
+          ai:
+            prompt: >
+              Write a 200-word "How to Choose" buying guide section for
+              {{dimensions.product}} for {{dimensions.use_case}}.
+              Cover: budget considerations for this audience, must-have vs
+              nice-to-have features, common mistakes to avoid, and a
+              recommended evaluation process. Be practical and specific to
+              the {{dimensions.use_case}} context. Format as HTML with
+              an <h2> heading and <p> tags. No bullet lists.
+            model: gpt-4o-mini
+            temperature: 0.7
+            maxTokens: 500
+          rules:
+            minWords: 150
+            maxWords: 350
+
+        - name: faq
+          type: ai
+          ai:
+            prompt: >
+              Write 4 frequently asked questions about choosing
+              {{dimensions.product}} for {{dimensions.use_case}}.
+              Questions should reflect real concerns this audience has.
+              Format as HTML: each Q as an <h3> and each A as a <p>.
+              Wrap everything in a <div class="faq"> with an <h2>FAQ</h2> heading.
+              Keep answers concise (2-3 sentences each).
+            model: gpt-4o-mini
+            temperature: 0.7
+            maxTokens: 500
+
         - name: cta
           type: static
-          template: "<a href='/contact' class='cta-button'>Get Started Today</a>"
+          template: |
+            <div class="cta-section">
+              <h2>Ready to Choose Your {{dimensions.product}}?</h2>
+              <p>Compare pricing, read user reviews, and start your free trial today.</p>
+              <a href="/contact" class="cta-button">Get Personalized Recommendations</a>
+            </div>
 
 images:
   templates: []
@@ -45,7 +137,7 @@ images:
 
 ai:
   defaultProvider: openai
-  concurrency: 5
+  concurrency: 3
   cache: true
   cacheTtlDays: 30
   providers:
@@ -58,6 +150,7 @@ seo:
   schemaTypes:
     - WebPage
     - BreadcrumbList
+    - FAQPage
   internalLinking:
     enabled: true
     maxLinksPerPage: 10
