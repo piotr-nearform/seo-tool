@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.seo-cache/
+.env
+
+# Build artifacts
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+coverage/
+demo-project/
+
+# Vitest
+.vite/
