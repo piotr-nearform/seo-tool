@@ -1,0 +1,79 @@
+name: reference-project
+version: "1.0.0"
+baseUrl: https://example.com
+outputDir: dist
+outputStructure: nested
+
+matrix:
+  dimensions:
+    industry:
+      values:
+        - technology
+        - healthcare
+      source: data/industries.csv
+      column: name
+    service:
+      values:
+        - consulting
+        - development
+        - training
+  pattern:
+    url: "/{{industry}}/{{service}}"
+    title: "{{service}} for {{industry}}"
+    description: "Expert {{service}} services for the {{industry}} industry."
+  filters: []
+
+templates:
+  layout: templates/layout.njk
+  pages:
+    - name: landing-page
+      file: templates/landing-page.njk
+      format: nunjucks
+      blocks:
+        - name: intro
+          type: static
+          template: "<h2>Welcome to {{ dimensions.service }} for {{ dimensions.industry }}</h2>"
+        - name: body
+          type: static
+          template: "<p>We provide top-quality {{ dimensions.service }} services tailored for the {{ dimensions.industry }} sector. Our team of experts has years of experience delivering results.</p>"
+
+images:
+  templates:
+    - name: og-image
+      width: 1200
+      height: 630
+      overlays:
+        - type: text
+          content: "{{title}}"
+          fontSize: 48
+          fontColor: "#ffffff"
+          x: 100
+          y: 200
+  outputFormats:
+    - webp
+  quality: 85
+
+ai:
+  defaultProvider: openai
+  concurrency: 5
+  cache: true
+  cacheTtlDays: 7
+  providers:
+    openai:
+      model: gpt-4
+      apiKeyEnv: OPENAI_API_KEY
+
+seo:
+  siteName: Reference Project
+  schemaTypes:
+    - WebPage
+    - BreadcrumbList
+  internalLinking:
+    enabled: true
+    maxLinksPerPage: 3
+    strategy: shared-dimension
+
+audit:
+  uniquenessThreshold: 0.7
+  minWordCount: 300
+  validateStructuredData: true

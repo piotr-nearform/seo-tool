@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ page.seo.title }}</title>
+  <meta name="description" content="{{ page.seo.description }}">
+  <link rel="canonical" href="{{ page.seo.canonical }}">
+  {% for key, value in page.seo.ogTags %}
+  <meta property="{{ key }}" content="{{ value }}">
+  {% endfor %}
+  {% for jsonLd in page.seo.jsonLd %}
+  <script type="application/ld+json">{{ jsonLd | dump | safe }}</script>
+  {% endfor %}
+</head>
+<body>
+  <h1>{{ page.entry.title }}</h1>
+  {{ page.content.intro | safe }}
+  {{ page.content.body | safe }}
+  {% if page.internalLinks.length > 0 %}
+  <nav>
+    <h3>Related Pages</h3>
+    <ul>
+    {% for link in page.internalLinks %}
+      <li><a href="{{ link.targetUrl }}">{{ link.anchorText }}</a></li>
+    {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+</body>
+</html>
