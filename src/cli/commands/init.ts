@@ -24,9 +24,19 @@ export async function scaffoldProject(projectDir: string): Promise<void> {
   await mkdir(path.join(projectDir, 'data'), { recursive: true });
   await mkdir(path.join(projectDir, 'assets'), { recursive: true });
 
-  // Resolve scaffold template directory
+  // Resolve scaffold template directory relative to package root
+  // Walk up from this file until we find package.json
   const thisFile = fileURLToPath(import.meta.url);
-  const scaffoldDir = path.resolve(path.dirname(thisFile), '../../../templates/scaffold');
+  let pkgRoot = path.dirname(thisFile);
+  while (pkgRoot !== path.dirname(pkgRoot)) {
+    try {
+      await access(path.join(pkgRoot, 'package.json'));
+      break;
+    } catch {
+      pkgRoot = path.dirname(pkgRoot);
+    }
+  }
+  const scaffoldDir = path.join(pkgRoot, 'templates', 'scaffold');
 
   // Copy config.yaml and replace project name
   const configTemplate = await readFile(path.join(scaffoldDir, 'config.yaml'), 'utf-8');
