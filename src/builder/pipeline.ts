@@ -216,6 +216,11 @@ export async function runBuild(
   const robotsContent = generateRobots(config.baseUrl, '/sitemap.xml');
   await writeFile(path.join(outputDir, 'robots.txt'), robotsContent, 'utf-8');
 
+  // 10. Generate index.html (directory listing of all pages)
+  logger.info('Generating index.html...');
+  const indexHtml = generateIndexPage(entries, config);
+  await writeFile(path.join(outputDir, 'index.html'), indexHtml, 'utf-8');
+
   // 10. Save build manifest
   const newManifest = createBuildManifest(entries, pageReports, config);
   await saveBuildManifest(cacheDir, newManifest);
@@ -328,4 +333,43 @@ function resolveOutputPathRelative(entry: PageEntry, config: ProjectConfig): str
     return `${entry.slug}.html`;
   }
   return path.join(entry.url, 'index.html');
+}
+
+/**
+ * Generate a root index.html listing all generated pages.
+ */
+function generateIndexPage(entries: PageEntry[], config: ProjectConfig): string {
+  const links = entries
+    .map((e) => {
+      const href = config.outputStructure === 'flat' ? `${e.slug}.html` : `${e.url}/`;
+      return `    <li><a href="${href}">${e.title}</a><br><small>${e.description}</small></li>`;
+    })
+    .join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${config.seo.siteName} — All Pages</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #222; max-width: 72rem; margin: 0 auto; padding: 2rem 1rem; }
+    h1 { margin-bottom: 0.5em; }
+    p.summary { color: #666; margin-bottom: 2rem; }
+    ul { list-style: none; }
+    li { padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+    a { color: #0057b7; text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    small { color: #888; }
+  </style>
+</head>
+<body>
+  <h1>${config.seo.siteName}</h1>
+  <p class="summary">${entries.length} pages generated</p>
+  <ul>
+${links}
+  </ul>
+</body>
+</html>`;
 }

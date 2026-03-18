@@ -2,6 +2,7 @@ import type { Command } from 'commander';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { loadConfig } from '../../core/config.js';
 
 const MIME_TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -80,10 +81,23 @@ export function registerPreviewCommand(program: Command): void {
     .command('preview')
     .description('Start a local preview server for generated pages')
     .option('--port <port>', 'Port to listen on', '3000')
-    .option('--dir <dir>', 'Directory to serve', 'dist')
+    .option('--dir <dir>', 'Directory to serve')
     .action(async (options) => {
       const port = parseInt(options.port, 10);
-      const dir = path.resolve(options.dir);
+
+      // Resolve output directory: explicit --dir > config.outputDir > 'dist'
+      let dir: string;
+      if (options.dir) {
+        dir = path.resolve(options.dir);
+      } else {
+        try {
+          const configPath = (options as any).__parentCommand?.opts?.()?.config ?? 'config.yaml';
+          const config = await loadConfig(path.resolve(configPath));
+          dir = path.resolve(config.outputDir);
+        } catch {
+          dir = path.resolve('dist');
+        }
+      }
 
       try {
         const server = await startPreviewServer(dir, port);
