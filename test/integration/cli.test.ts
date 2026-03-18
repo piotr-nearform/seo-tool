@@ -76,12 +76,20 @@ describe('CLI Integration', () => {
     expect(output).toContain('export');
   });
 
-  it('should log stub message for each non-build command', () => {
-    const commands = ['init', 'preview', 'audit', 'export'];
-    for (const cmd of commands) {
-      const output = runCli([cmd]);
-      expect(output).toContain('not yet implemented');
-    }
+  it('should show usage info when commands are invoked without required context', () => {
+    // init requires a project-name argument
+    const initOutput = runCli(['init']);
+    expect(initOutput).toContain('project-name');
+
+    // preview, audit, export run but may fail without dist dir — they no longer say "not yet implemented"
+    const previewOutput = runCli(['preview', '--help']);
+    expect(previewOutput).toContain('preview');
+
+    const auditOutput = runCli(['audit', '--help']);
+    expect(auditOutput).toContain('audit');
+
+    const exportOutput = runCli(['export', '--help']);
+    expect(exportOutput).toContain('export');
   });
 
   it('should show error for build without config file', () => {
