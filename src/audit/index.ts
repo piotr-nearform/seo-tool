@@ -1,2 +1,10 @@
-// Audit system — to be implemented in a future epic.
-export {};
+export { checkUniqueness, shingleize, minHashSignature, jaccardFromSignatures } from './uniqueness.js';
+export type { UniquenessResult } from './uniqueness.js';
+export { checkThinContent } from './thin-content.js';
+export type { ThinContentResult } from './thin-content.js';
+export { checkBrokenLinks } from './broken-links.js';
+export type { BrokenLinkResult } from './broken-links.js';
+export { validateStructuredData } from './structured-data-validator.js';
+export type { StructuredDataResult } from './structured-data-validator.js';
+export { generateAuditReport, formatAuditReport } from './reporter.js';
+export type { AuditInput } from './reporter.js';
