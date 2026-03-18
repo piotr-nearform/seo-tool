@@ -12,8 +12,10 @@ function runCli(args: string[]): string {
       timeout: 15000,
     });
   } catch (error: any) {
-    // Commander exits with code 1 for --help, capture stdout
-    return error.stdout || error.stderr || error.message;
+    // Commander exits with code 1 for --help; combine stdout and stderr
+    const stdout = error.stdout ?? '';
+    const stderr = error.stderr ?? '';
+    return stdout + stderr || error.message;
   }
 }
 
@@ -35,17 +37,18 @@ describe('CLI Integration', () => {
 
   it('should accept --verbose flag', () => {
     const output = runCli(['build', '--verbose']);
-    expect(output).toContain('not yet implemented');
+    // Build now tries to load config; without a config file it errors
+    expect(output).toContain('config');
   });
 
   it('should accept --quiet flag', () => {
     const output = runCli(['build', '--quiet']);
-    expect(output).toContain('not yet implemented');
+    expect(output).toContain('config');
   });
 
   it('should accept --config flag', () => {
     const output = runCli(['build', '--config', 'custom.yaml']);
-    expect(output).toContain('not yet implemented');
+    expect(output).toContain('Failed to read config file');
   });
 
   it('should show init command help', () => {
@@ -73,11 +76,26 @@ describe('CLI Integration', () => {
     expect(output).toContain('export');
   });
 
-  it('should log stub message for each command', () => {
-    const commands = ['init', 'build', 'preview', 'audit', 'export'];
+  it('should log stub message for each non-build command', () => {
+    const commands = ['init', 'preview', 'audit', 'export'];
     for (const cmd of commands) {
       const output = runCli([cmd]);
       expect(output).toContain('not yet implemented');
     }
+  });
+
+  it('should show error for build without config file', () => {
+    const output = runCli(['build']);
+    expect(output).toContain('config');
+  });
+
+  it('should accept --dry-run flag for build', () => {
+    const output = runCli(['build', '--help']);
+    expect(output).toContain('dry-run');
+  });
+
+  it('should accept --sample flag for build', () => {
+    const output = runCli(['build', '--help']);
+    expect(output).toContain('sample');
   });
 });
