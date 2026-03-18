@@ -92,7 +92,7 @@ export type ImageOverlay = z.infer<typeof ImageOverlaySchema>;
 
 export const ImageTemplateConfigSchema = z.object({
   name: z.string(),
-  baseImage: z.string(),
+  baseImage: z.string().optional(),
   width: z.number(),
   height: z.number(),
   overlays: z.array(ImageOverlaySchema),

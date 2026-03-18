@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.seo.title }}</title>
+  <meta name="description" content="{{ page.seo.description }}">
+  <link rel="canonical" href="{{ page.seo.canonical }}">
+  {% for key, value in page.seo.ogTags %}
+  <meta property="{{ key }}" content="{{ value }}">
+  {% endfor %}
+  {% for key, value in page.seo.twitterTags %}
+  <meta name="{{ key }}" content="{{ value }}">
+  {% endfor %}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #222; max-width: 72rem; margin: 0 auto; padding: 1rem; }
+    img, video { max-width: 100%; height: auto; display: block; }
+    h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-bottom: 0.5em; }
+    p { margin-bottom: 1em; }
+    a { color: #0057b7; }
+    nav.breadcrumbs { font-size: 0.875rem; margin-bottom: 1.5rem; }
+    nav.breadcrumbs a { text-decoration: none; }
+    nav.breadcrumbs span::before { content: " / "; }
+    main { margin-bottom: 2rem; }
+    @media (max-width: 600px) {
+      body { padding: 0.75rem; }
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    {% for crumb in page.seo.breadcrumbs %}
+    {% if loop.last %}
+    <span aria-current="page">{{ crumb.name }}</span>
+    {% else %}
+    <span><a href="{{ crumb.url }}">{{ crumb.name }}</a></span>
+    {% endif %}
+    {% endfor %}
+  </nav>
+
+  <main>
+    <h1>{{ page.entry.title }}</h1>
+    {% for name, html in page.content %}
+    <section class="content-block" data-block="{{ name }}">
+      {{ html | safe }}
+    </section>
+    {% endfor %}
+  </main>
+
+  {% if page.internalLinks.length %}
+  <nav class="internal-links">
+    <h2>Related Pages</h2>
+    <ul>
+      {% for link in page.internalLinks %}
+      <li><a href="{{ link.targetUrl }}" rel="{{ link.relationship }}">{{ link.anchorText }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <footer>
+    {% block footer %}{% endblock %}
+  </footer>
+
+  {% for item in page.seo.jsonLd %}
+  <script type="application/ld+json">{{ item | dump | safe }}</script>
+  {% endfor %}
+</body>
+</html>
