@@ -1,0 +1,86 @@
+name: my-seo-project
+version: "1.0.0"
+baseUrl: https://example.com
+outputDir: dist
+outputStructure: nested
+
+matrix:
+  dimensions:
+    city:
+      values:
+        - new-york
+        - los-angeles
+        - chicago
+    service:
+      values:
+        - plumbing
+        - electrical
+  pattern:
+    url: "/{{city}}/{{service}}"
+    title: "{{service}} in {{city}}"
+    description: "Find the best {{service}} services in {{city}}."
+  filters: []
+
+templates:
+  layout: templates/layout.njk
+  pages:
+    - name: city-service
+      file: templates/city-service.njk
+      format: nunjucks
+      blocks:
+        - name: intro
+          type: static
+          template: "Welcome to {{city}}"
+        - name: body
+          type: ai
+          ai:
+            prompt: "Write about {{service}} in {{city}}"
+            provider: openai
+            model: gpt-4
+            temperature: 0.7
+            maxTokens: 1000
+
+images:
+  templates:
+    - name: og-image
+      baseImage: templates/og-bg.png
+      width: 1200
+      height: 630
+      overlays:
+        - type: text
+          content: "{{title}}"
+          font: Arial
+          fontSize: 48
+          fontColor: "#ffffff"
+          x: 100
+          y: 200
+          maxWidth: 1000
+  outputFormats:
+    - webp
+  quality: 85
+
+ai:
+  defaultProvider: openai
+  concurrency: 5
+  cache: true
+  cacheTtlDays: 7
+  providers:
+    openai:
+      model: gpt-4
+      apiKeyEnv: OPENAI_API_KEY
+
+seo:
+  siteName: My SEO Site
+  defaultOgImage: /images/default-og.png
+  schemaTypes:
+    - WebPage
+    - FAQPage
+  internalLinking:
+    enabled: true
+    maxLinksPerPage: 5
+    strategy: shared-dimension
+
+audit:
+  uniquenessThreshold: 0.7
+  minWordCount: 300
+  validateStructuredData: true

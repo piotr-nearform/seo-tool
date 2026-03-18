@@ -1,0 +1,9 @@
+name: bad-config
+# missing version, baseUrl, outputDir, etc
+outputStructure: invalid-value
+matrix:
+  dimensions: {}
+  pattern:
+    url: "/test"
+    # missing title and description
+  filters: []
